@@ -50,7 +50,6 @@ var main = new Vue({
   el: '#mainpage',
   data:{
     input:"",
-    prevInput:"",
     section:"",
     sectionList:"",
     loading: false,
@@ -75,6 +74,7 @@ var main = new Vue({
       }
       else
       {
+        this.bookmark = "";
         this.errored = false
         this.translation = "";
         this.loading = true;
@@ -93,7 +93,6 @@ var main = new Vue({
             this.errored = true
           })
           .then(this.noResultError)
-          .then(() => this.prevInput = this.input)
           .then(this.displayBookmark)
           .then(this.addToRecent)
           .finally(() => this.loading = false)
@@ -113,7 +112,6 @@ var main = new Vue({
             this.errored = true
           })
           .then(this.noResultError)
-          .then(() => this.prevInput = this.input)
           .then(this.displayBookmark)
           .then(this.addToRecent)
           .finally(() => this.loading = false)
@@ -221,9 +219,9 @@ var main = new Vue({
         this.errored = true;
         return Promise.reject('err');
         this.loading = false;
+        console.log("error");
       }
       else{
-        this.bookmark = "b"
       }
     },
 
@@ -315,8 +313,8 @@ var main = new Vue({
     // if word isn't already in array
     addToRecent: function()
     {
-      // localStorage.removeItem('recent');
       var recentArray = JSON.parse(localStorage.getItem('recent'));
+      console.log(recentArray);
       if (recentArray == null)
       {
         recentArray = [];

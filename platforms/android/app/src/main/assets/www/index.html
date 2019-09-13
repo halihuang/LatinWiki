@@ -29,118 +29,164 @@
     <!-- Status bar overlay for fullscreen mode-->
     <div class="statusbar"></div>
     <!-- Left panel with reveal effect when hidden -->
-    <!-- <div class="panel panel-left panel-reveal">
-      <div class="view view-left">
-        <div class="page">
-          <div class="navbar">
-            <div class="navbar-inner sliding">
-            </div>
-          </div>
-          <div class="page-content">
-            <div class="list links-list">
-              <ul>
-                <li><a href="/index.html" data-view=".view-main">Translate</a></li>
-                <li><a href="/saved/" data-view=".view-main">Saved</a></li>
-                <li><a href="/history/" data-view=".view-main">History</a></li>
-                <li><a href="/settings/" data-view=".view-main" class="panel-close">Settings</a></li>
-                <li><a href="/about/" data-view=".view-main" class="panel-close">About</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
+
+
+
 
     <!-- Your main view, should have "view-main" class -->
     <div class="view view-main safe-areas">
+
       <!-- Page, data-name contains page name which can be used in callbacks -->
       <div class="page" id= "mainpage" data-name="home">
         <!-- Top Navbar -->
-        <div class="navbar">
-          <div class="navbar-inner">
-            <div class="title sliding">Latin Wiki</div>
+        <div class="navbar" style="width:2000px; margin-left:-90px">
+          <div class="navbar-inner" style="margin-left:100px">
+            <i v-on:click="changeSideBar" class="icon material-icons inlined">menu</i>
+            <div class="title sliding inlined">{{this.title}}</div>
           </div>
         </div>
+
+        <div id= "navSidebar" class="list links-list sidebar">
+          <div class="navbar"></div>
+          <ul style="margin-top:20px">
+            <li><a v-on:click="moveToTranslate">Translate</a></li>
+            <li><a v-on:click="moveToSaved(); loadSaved()">Saved</a></li>
+            <li><a v-on:click="moveToHistory(); loadRecent()">History</a></li>
+            <li><a v-on:click="moveToAbout">About</a></li>
+          </ul>
+        </div>
+
 
         <!-- Scrollable page content-->
-        <div class="page-content">
+        <div class="page-content" v-on:click="closeSideBar">
 
-          <div v-on:click="changeLanguage" class="block-title" style="font-weight:bold;font-size:1.5em;word-spacing:2px;color:#0c82df;margin-top:0px; margin-bottom:-3vh">
-            <p v-if="latinToEng" class="inlined">Latin</p>
-            <p v-else class="inlined">English</p>
-            <i class="icon material-icons inlined">trending_flat</i>
-            <p v-if="latinToEng" class="inlined">English</p>
-            <p v-else class="inlined">Latin</p>
-          </div>
-          <div class="block">
-            <div class="list no-hairlines">
-              <ul>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                  <div class="item-input-wrap">
-                    <input v-model="input" v-on:keyup.enter="searchLatin" type="text" placeholder="Latin Word">
-                    <span class="input-clear-button"></span>
-                  </div>
-                  <button v-on:click="searchLatin" class="button button-fill" style="margin-top:1vh"> Enter </button>
-                  <div class="bottom-border"></div>
-
-                  <div style="margin-top:40px;" class="block text-align-center">
-                    <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
-                    <div v-if="errored" style="font-weight:500;font-size:1.1em;">
-                      <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
-                      <p> Please try again!</p>
-                    </div>
-                  </div>
-                  <p v-html="translation" style="margin-top:5px;"></p>
-                </li>
-              </ul>
+          <!-- Translate Page -->
+          <div>
+            <div id="pageTranslate">
+              <div v-on:click="changeLanguage" class="block-title" style="font-weight:bold;font-size:1.5em;word-spacing:2px;color:#0c82df;margin-top:20px; margin-bottom:-3vh">
+                <p v-if="latinToEng" class="inlined">Latin</p>
+                <p v-else class="inlined">English</p>
+                <i class="icon material-icons inlined">trending_flat</i>
+                <p v-if="latinToEng" class="inlined">English</p>
+                <p v-else class="inlined">Latin</p>
+              </div>
+              <div class="block">
+                <div class="list no-hairlines">
+                  <ul>
+                    <li class="item-content item-input">
+                      <div class="item-inner">
+                      <div class="item-input-wrap">
+                        <input v-model="input" v-on:keyup.enter="searchLatin" type="text" placeholder="Latin Word">
+                        <span class="input-clear-button"></span>
+                      </div>
+                      <button v-on:click="searchLatin" class="button button-fill" style="margin-top:1vh"> Enter </button>
+                      <div class="bottom-border"></div>
+                      <div style="margin-top:40px;" class="block text-align-center">
+                        <transition name="fade" mode="out-in">
+                          <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
+                        </transition>
+                        <transition name="fade" mode="out-in">
+                          <div v-if="errored" style="font-weight:500;font-size:1.1em;">
+                            <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
+                            <p> Please try again!</p>
+                          </div>
+                        </transition>
+                      </div>
+                      <transition name="fadeSlow">
+                        <div class="block" v-if="loading == false">
+                          <i class="icon material-icons stacked"  v-on:click="addToSaved"
+                          style="left:250px;top:20px;color:#0c82df">{{ bookmark }}</i>
+                          <p v-html="translation" class="stacked" style="margin-top:5px;pointer-events: none"></p>
+                        </div>
+                      </transition>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
+
+
+          <!-- Saved Translations Page -->
+          <div id="pageSaved" class="main-pgview">
+            <div v-if="saved.length == 0" class="block text-align-center">
+              <transition name="fade" mode="out-in">
+                <div style="font-weight:500;font-size:1.1em;">
+                  <p>You have nothing saved currently. Go translate some words!</p>
+                </div>
+              </transition>
+            </div>
+            <div class="block" v-for="item in saved" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
+              <span v-on:click="if(item.collapsed == true){item.collapsed = false}else{item.collapsed = true}">
+                <h3 class="inlined">{{ item.input }}</h3>
+                <i v-if="item.collapsed" class="icon material-icons inlined">arrow_drop_down</i>
+                <span v-if="!item.collapsed">
+                  <i class="icon material-icons inlined">arrow_drop_up</i>
+                </span>
+              </span>
+              <a class="inlined" style="text-align:right;" id="item.input" v-on:click="removeSaved(item.input)">Forget</a>
+              <p v-if="!item.collapsed" v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
+            </div>
+          </div>
+
+
+
+          <!-- History Page -->
+          <div id="pageHistory" class="main-pgview">
+            <div v-if="recent.length == 0"  class="block text-align-center">
+              <transition name="fade" mode="out-in">
+                <div style="font-weight:500;font-size:1.1em;">
+                  <p>You have nothing in your history currently. Go translate some words!</p>
+                </div>
+              </transition>
+            </div>
+            <div class="block" v-for="item in recent" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
+              <div v-on:click="if(item.collapsed == true){item.collapsed = false}else{item.collapsed = true}">
+                <h3 class="inlined">{{ item.input }}</h3>
+                <i v-if="item.collapsed" class="icon material-icons inlined">arrow_drop_down</i>
+                <span v-else>
+                  <i class="icon material-icons inlined">arrow_drop_up</i>
+                  <p v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- About Page -->
+          <div id="pageAbout" class="main-pgview">
+            <div class="block-title">About My App</div>
+            <div class="block block-strong">
+              <p>This app allows users to translate from English to Latin and back through the use of the Yandex Translate and Wikitionary APIS. It also tracks
+              your recently translated words down in a History page and allows you to save words too.</p>
+            </div>
+            <div class="block-title">About The Author</div>
+            <div class="block block-strong">
+              <p> Hi, I'm Hali Huang, the creator of this app! As a student currently enrolled in a Latin course, I found the latin translators currently avaliable to be lacking.
+              While many translators would provide you with an accurately translated word, they would tell you very little important information about the word like the declensions it is in
+              or the conjugations of the word. After a year of plugging words between multiple websites, I got the brilliant idea to make the process easier
+              by making an app to do the process for me. So that's we got here. This was the first app I ever made, and I'm pretty happy with the way it turned out. Hope you enjoy!</p>
+            </div>
+            <div class="block-title">Contact Me</div>
+            <div class="block block-strong">
+              <span>
+                <p>LinkedIn:</p>
+                <a href=www.linkedin.com/in/hali-huang-42773918b>www.linkedin.com/in/hali-huang-42773918b</a>
+                <p>GitHub:</p>
+                <a href=https://github.com/halihuang>https://github.com/halihuang</a>
+              </span>
+            </div>
+          </div>
+
         </div>
-      </div>
-    </div>
 
-
-
-    <!-- Login Screen -->
-    <div class="login-screen" id="my-login-screen">
-      <div class="view">
-        <div class="page">
-          <div class="page-content login-screen-content">
-            <div class="login-screen-title">Login</div>
-            <div class="list">
-              <ul>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Username</div>
-                    <div class="item-input-wrap">
-                      <input type="text" name="username" placeholder="Your username">
-                    </div>
-                  </div>
-                </li>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Password</div>
-                    <div class="item-input-wrap">
-                      <input type="password" name="password" placeholder="Your password">
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="list">
-              <ul>
-                <li>
-                  <a href="#" class="item-link list-button login-button">Sign In</a>
-                </li>
-              </ul>
-              <div class="block-footer">Some text about login information.<br>Click "Sign In" to close Login Screen</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
+</div>
+
+
+
   <!-- Cordova -->
   <!--
   <script src="cordova.js"></script>
@@ -148,9 +194,6 @@
 
   <!-- Framework7 library -->
   <script src="framework7/js/framework7.bundle.min.js"></script>
-
-  <!-- App routes -->
-  <script src="js/routes.js"></script>
 
 
   <!-- Your custom app scripts -->

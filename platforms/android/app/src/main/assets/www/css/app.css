@@ -31,6 +31,72 @@
    margin-right:-10px;
 }
 
+/* Navbar Things */
+.navbar-inner {
+  margin-left:3vh
+}
+
+.stacked {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Side Bar and page transitions*/
+
+.sidebar {
+  margin:0;
+  height:100%;
+  width:0;
+  position:fixed;
+  overflow:hidden;
+  top: 0;
+  left: -200px;
+  transition: .5s;
+  background-color: #FFFF;
+  box-shadow: 0px 0px 0px 0px grey;
+}
+
+#mainpage {
+  transition: margin-left .5s;
+  margin:auto;
+}
+
+/* Page routing */
+
+.main-pgview {
+  display:none;
+  margin-left: 10px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.fadeSlow-enter-active {
+  transition: opacity 1.2s;
+}
+
+ .fadeSlow-leave-active{
+  transition: opacity 0.3s;
+}
+
+.fadeSlow-enter, .fadeSlow-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+
+
+
+
+
+
+
+
 /*
   Extra borders for main view and left panel for iOS theme when it behaves as panel (before breakpoint size)
 */
