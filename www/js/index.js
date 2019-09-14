@@ -50,6 +50,7 @@ var main = new Vue({
   el: '#mainpage',
   data:{
     input:"",
+    prevInput:"",
     section:"",
     sectionList:"",
     loading: false,
@@ -68,12 +69,11 @@ var main = new Vue({
   methods:{
     searchLatin: function()
     {
-      if(this.input == this.prevInput)
-      {
-        // do nothing
+      this.changePrevInputError();
+      if(this.input == this.prevInput){
+
       }
-      else
-      {
+      else {
         this.bookmark = "";
         this.errored = false
         this.translation = "";
@@ -93,6 +93,7 @@ var main = new Vue({
             this.errored = true
           })
           .then(this.noResultError)
+          .then(() => this.prevInput = this.input)
           .then(this.displayBookmark)
           .then(this.addToRecent)
           .finally(() => this.loading = false)
@@ -112,6 +113,7 @@ var main = new Vue({
             this.errored = true
           })
           .then(this.noResultError)
+          .then(() => this.prevInput = this.input)
           .then(this.displayBookmark)
           .then(this.addToRecent)
           .finally(() => this.loading = false)
@@ -219,9 +221,16 @@ var main = new Vue({
         this.errored = true;
         return Promise.reject('err');
         this.loading = false;
-        console.log("error");
       }
       else{
+      }
+    },
+
+    // changes the previous input to avoid it getting stuck if an error occurs
+     // and you want to search the word you searched before the error word
+    changePrevInputError : function(){
+      if (this.errored == true){
+        this.prevInput = "";
       }
     },
 
@@ -314,7 +323,6 @@ var main = new Vue({
     addToRecent: function()
     {
       var recentArray = JSON.parse(localStorage.getItem('recent'));
-      console.log(recentArray);
       if (recentArray == null)
       {
         recentArray = [];
@@ -398,6 +406,9 @@ var main = new Vue({
         if(item.input == elementId) {
           var index = savedArray.indexOf(item);
           savedArray.splice(index, 1);
+          if(item.input == this.prevInput){
+            this.bookmark = "bookmark_border";
+          }
         }
       }
       this.saved = savedArray;
