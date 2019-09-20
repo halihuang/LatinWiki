@@ -4,7 +4,7 @@
   "description": "latin to english and english to latin translator",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/framework7io/framework7-template-split-view.git"
+    "url": "git+https://github.com/halihuang/LatinWiki.git"
   },
   "main": "index.js",
   "scripts": {
