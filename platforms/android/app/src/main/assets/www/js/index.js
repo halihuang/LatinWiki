@@ -69,12 +69,12 @@ var main = new Vue({
   methods:{
     searchLatin: function()
     {
-      if(this.input == this.prevInput)
-      {
-        // do nothing
+      this.changePrevInputError();
+      if(this.input == this.prevInput){
+
       }
-      else
-      {
+      else {
+        this.bookmark = "";
         this.errored = false
         this.translation = "";
         this.loading = true;
@@ -223,7 +223,14 @@ var main = new Vue({
         this.loading = false;
       }
       else{
-        this.bookmark = "b"
+      }
+    },
+
+    // changes the previous input to avoid it getting stuck if an error occurs
+     // and you want to search the word you searched before the error word
+    changePrevInputError : function(){
+      if (this.errored == true){
+        this.prevInput = "";
       }
     },
 
@@ -315,7 +322,6 @@ var main = new Vue({
     // if word isn't already in array
     addToRecent: function()
     {
-      // localStorage.removeItem('recent');
       var recentArray = JSON.parse(localStorage.getItem('recent'));
       if (recentArray == null)
       {
@@ -400,6 +406,9 @@ var main = new Vue({
         if(item.input == elementId) {
           var index = savedArray.indexOf(item);
           savedArray.splice(index, 1);
+          if(item.input == this.prevInput){
+            this.bookmark = "bookmark_border";
+          }
         }
       }
       this.saved = savedArray;
