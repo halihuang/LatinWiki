@@ -70,7 +70,7 @@ var main = new Vue({
     searchLatin: function()
     {
       if(this.input == this.prevInput || null){
-
+        // do nothing
       }
       else {
         this.bookmark = "";
@@ -175,7 +175,7 @@ var main = new Vue({
         }
         function checkWhitelist()
         {
-          var whitelistedSections = ['Verb','Adjective','Declension','Usage notes','Conjugation','Conjunction','Adverb','Pronoun','Preposition','Determiner', 'Noun', 'Participle', 'Interjection']
+          var whitelistedSections = ['Verb','Adjective','Declension','Usage notes','Conjugation','Conjunction','Adverb','Pronoun','Preposition','Determiner', 'Noun', 'Participle', 'Interjection', 'Numeral']
           for(element of whitelistedSections){
             if(element == item.line){
               return true;
@@ -221,6 +221,7 @@ var main = new Vue({
         this.loading = false;
       }
       else{
+        // do nothing
       }
     },
 
@@ -258,42 +259,47 @@ var main = new Vue({
     // if word isn't already in array
     addToRecent: function()
     {
-      var recentArray = JSON.parse(localStorage.getItem('recent'));
-      if (recentArray == null)
-      {
-        recentArray = [];
-        var recentObject = {translation:this.translation, input:this.prevInput, collapsed:true};
-        recentArray.unshift(recentObject);
-      }
-      else
-      {
-        for(item of recentArray)
+      // localStorage.removeItem('recent');
+      if(!(this.errored)){
+        var recentArray = JSON.parse(localStorage.getItem('recent'));
+        console.log(recentArray);
+        if (recentArray == null)
         {
-          if(item.input == this.prevInput)
+          recentArray = [{translation:this.translation, input:this.prevInput, collapsed:true}];
+        }
+        else
+        {
+          for(item of recentArray)
           {
-            var duplicate = true;
+            if(item.input == this.prevInput)
+            {
+              var duplicate = true;
+            }
+          };
+          if(!(duplicate == true)){
+            recentArray.unshift({translation:this.translation, input:this.prevInput, collapsed:true});
+            if(recentArray.length > 10)
+            {
+              recentArray = recentArray.pop();
+            }
           }
         };
-        if(!(duplicate == true)){
-          recentArray.unshift(recentObject);
-          if(recentArray.length > 10)
-          {
-            recentArray = recentArray.pop();
-          }
-        }
-      };
-      var localRecent = JSON.stringify(recentArray);
-      localStorage.setItem('recent', localRecent);
+        console.log(recentArray);
+        var localRecent = JSON.stringify(recentArray);
+        localStorage.setItem('recent', localRecent);
+      }
     },
 
     // gets the array of recent translations and sets the recent vue data object to interval
     // so we can access it in the html
     loadRecent:function(){
       var recentArray = JSON.parse(localStorage.getItem('recent'));
-      for(item of recentArray){
-        this.collapsed = true;
+      if(recentArray != null){
+        for(item of recentArray){
+          this.collapsed = true;
+        }
+        this.recent = recentArray;
       }
-      this.recent = recentArray;
     },
 
     addToSaved:function(){
@@ -330,10 +336,12 @@ var main = new Vue({
 
     loadSaved: function(){
       var savedArray = JSON.parse(localStorage.getItem('saved'));
-      for (item of savedArray){
-        this.collapsed = true;
+      if(savedArray != null){
+        for (item of savedArray){
+          this.collapsed = true;
+        }
+        this.saved = savedArray;
       }
-      this.saved = savedArray;
     },
 
     removeSaved: function(elementId){
