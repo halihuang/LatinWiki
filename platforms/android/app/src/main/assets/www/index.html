@@ -51,7 +51,7 @@
           <ul style="margin-top:20px">
             <li><a v-on:click="moveToTranslate">Translate</a></li>
             <li><a v-on:click="moveToSaved(); loadSaved()">Saved</a></li>
-            <li><a v-on:click="moveToHistory(); loadRecent()">History</a></li>
+            <li><a v-on:click="loadRecent(); moveToHistory(); ">History</a></li>
             <li><a v-on:click="moveToAbout">About</a></li>
           </ul>
         </div>
@@ -204,6 +204,8 @@
 
 
   <!-- Javascript Files -->
+  <script type="text/javascript" src="js/navigation.js"></script>
+  <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
 
 </body>

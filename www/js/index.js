@@ -46,7 +46,7 @@ var app = {
 };
 
 
-var main = new Vue({
+window.main = new Vue({
   el: '#mainpage',
   data:{
     input:"",
@@ -69,7 +69,7 @@ var main = new Vue({
   methods:{
     searchLatin: function()
     {
-      if(this.input == this.prevInput || null){
+      if(this.input == null && this.input == prevInput){
         // do nothing
       }
       else {
@@ -83,38 +83,49 @@ var main = new Vue({
           this.getSections()
           .catch(error => {
             console.log(error)
-            this.errored = true
+            this.loading = false;
+            this.errored = true;
           })
           .then(() => this.loading = true)
           .then(this.findLatinSection)
           .then(this.loadLatin)
           .catch(error => {
-            console.log(error)
-            this.errored = true
+            console.log(error);
+            this.loading = false;
+            this.errored = true;
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
           .then(this.addToRecent)
-          .finally(() => this.loading = false)
+          .then(() => {this.loading = false; this.errored = false;})
+          .finally(this.translateLink);
         }
         else
         {
           this.convertToLatin()
+          .catch(error => {
+            console.log(error);
+            this.loading = false;
+            this.errored = true;
+          })
           .then(this.getSections)
           .catch(error => {
-            console.log(error)
-            this.errored = true
+            console.log(error);
+            this.loading = false;
+            this.errored = true;
           })
           .then(this.findLatinSection)
           .then(this.loadLatin)
           .catch(error => {
             console.log(error)
-            this.errored = true
+            this.loading = false;
+            this.errored = true;
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
           .then(this.addToRecent)
-          .finally(() => this.loading = false)
+          .then(() => {this.loading = false; this.errored = false;})
+          .finally(this.translateLink);
         }
       }
 
@@ -143,8 +154,9 @@ var main = new Vue({
         axios
         .get('https://en.wiktionary.org/w/api.php?action=parse&page='+ this.word + '&noimages=true'
         + '&section='+ item + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
-        .then((response) => {this.translation = response.data.parse.text["*"];})
-        );
+        .then((response) => {
+          this.translation = response.data.parse.text["*"];
+        }));
       }
     },
 
@@ -234,7 +246,6 @@ var main = new Vue({
     },
 
 
-
     moveToTranslate: function()
     {
       navigation.moveToTranslate();
@@ -255,12 +266,17 @@ var main = new Vue({
       navigation.moveToAbout();
     },
 
+    translateLink: function()
+    {
+      linkSearcher.searchLink();
+    },
+
     // adds the latest word and its translation to an array in local storage, only adds
     // if word isn't already in array
     addToRecent: function()
     {
       // localStorage.removeItem('recent');
-      if(!(this.errored)){
+      if(!(this.errored) && this.translation != ""){
         var recentArray = JSON.parse(localStorage.getItem('recent'));
         console.log(recentArray);
         if (recentArray == null)
@@ -269,18 +285,19 @@ var main = new Vue({
         }
         else
         {
+          var duplicate = false;
           for(item of recentArray)
           {
             if(item.input == this.prevInput)
             {
-              var duplicate = true;
+              duplicate = true;
             }
           };
-          if(!(duplicate == true)){
+          if(!(duplicate)){
             recentArray.unshift({translation:this.translation, input:this.prevInput, collapsed:true});
             if(recentArray.length > 10)
             {
-              recentArray = recentArray.pop();
+              recentArray.pop();
             }
           }
         };
@@ -293,13 +310,26 @@ var main = new Vue({
     // gets the array of recent translations and sets the recent vue data object to interval
     // so we can access it in the html
     loadRecent:function(){
-      var recentArray = JSON.parse(localStorage.getItem('recent'));
-      if(recentArray != null){
+      try{
+        var recentArray = JSON.parse(localStorage.getItem('recent'));
+        if(recentArray != null && recentArray.length != 0){
+          for(item of recentArray){
+            this.collapsed = true;
+          }
+          this.recent = recentArray;
+        }
+      }
+      catch(err){
+        console.log("error", err);
+        recentArray = [];
+        var localRecent = JSON.stringify(recentArray);
+        localStorage.setItem('recent', localRecent);
         for(item of recentArray){
           this.collapsed = true;
         }
         this.recent = recentArray;
       }
+
     },
 
     addToSaved:function(){
@@ -380,8 +410,12 @@ var main = new Vue({
     }
 
 
+  },
+  mounted(){
+    this.translateLink();
   }
-})
+
+});
 
 
 app.initialize();

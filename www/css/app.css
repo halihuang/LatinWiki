@@ -62,6 +62,11 @@
   margin:auto;
 }
 
+
+a {
+  z-index:10000000000;
+}
+
 /* Page routing */
 
 .main-pgview {
@@ -88,7 +93,6 @@
 .fadeSlow-enter, .fadeSlow-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-
 
 
 
