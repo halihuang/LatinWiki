@@ -4,8 +4,7 @@
 window.linkSearcher = {};
 
 linkSearcher.searchLink = function(){
-  console.log("1");
-  $('#translationBlock a').click((event) =>
+  $('translationBlock > a').click((event) =>
   {
     let clickedHTML = event.target.innerHTML;
     if(clickedHTML != "Translate" && clickedHTML != "Saved" && clickedHTML != "History" && clickedHTML != "About" && clickedHTML != "Forget"){

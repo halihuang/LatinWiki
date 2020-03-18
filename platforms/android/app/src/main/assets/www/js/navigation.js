@@ -11,7 +11,7 @@ navigation.moveToSaved = function()
   savedBlock.style.display= "block";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "none";
-  this.title="Saved";
+  navigation.title="Saved";
 }
 
 navigation.moveToHistory = function()
@@ -24,7 +24,7 @@ navigation.moveToHistory = function()
   savedBlock.style.display= "none";
   historyBlock.style.display= "block";
   aboutBlock.style.display= "none";
-  this.title="History"
+  navigation.title="History";
 }
 
 navigation.moveToAbout = function()
@@ -37,7 +37,7 @@ navigation.moveToAbout = function()
   savedBlock.style.display= "none";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "block";
-  this.title="About"
+  navigation.title="About";
 }
 
 navigation.moveToTranslate = function()
@@ -50,5 +50,5 @@ navigation.moveToTranslate = function()
   savedBlock.style.display= "none";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "none";
-  this.title="Latin Wiki";
+  navigation.title="Latin Wiki";
 }

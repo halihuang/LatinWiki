@@ -50,7 +50,7 @@
           <div class="navbar"></div>
           <ul style="margin-top:20px">
             <li><a v-on:click="moveToTranslate">Translate</a></li>
-            <li><a v-on:click="moveToSaved(); loadSaved()">Saved</a></li>
+            <li><a v-on:click="loadSaved(); moveToSaved(); ">Saved</a></li>
             <li><a v-on:click="loadRecent(); moveToHistory(); ">History</a></li>
             <li><a v-on:click="moveToAbout">About</a></li>
           </ul>
@@ -76,27 +76,27 @@
                     <li class="item-content item-input">
                       <div class="item-inner">
                       <div class="item-input-wrap">
-                        <input v-model="input" v-on:keyup.enter="searchLatin" type="text" placeholder="Your Word">
+                        <input v-model="input" v-on:keyup.enter="searchLatin();translateLink();" type="text" placeholder="Your Word">
                         <span class="input-clear-button"></span>
                       </div>
-                      <button v-on:click="searchLatin" class="button button-fill" style="margin-top:1vh"> Enter </button>
+                      <button v-on:click="searchLatin();translateLink();" class="button button-fill" style="margin-top:1vh"> Enter </button>
                       <div class="bottom-border"></div>
                       <div style="margin-top:40px;" class="block text-align-center">
                         <transition name="fade" mode="out-in">
                           <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
                         </transition>
                         <transition name="fade" mode="out-in">
-                          <div v-if="errored" style="font-weight:500;font-size:1.1em;">
+                          <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em;">
                             <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
                             <p> Please try again!</p>
                           </div>
                         </transition>
                       </div>
                       <transition name="fadeSlow">
-                        <div class="block" v-if="loading == false">
+                        <div class="block" id="translationBlock" v-if="!loading">
                           <i class="icon material-icons stacked"  v-on:click="addToSaved"
                           style="left:250px;top:20px;color:#0c82df">{{ bookmark }}</i>
-                          <p v-html="translation" class="stacked" style="margin-top:5px;pointer-events: none"></p>
+                          <div v-html="translation" style="margin-top:5px;"></div>
                         </div>
                       </transition>
                     </li>
@@ -117,15 +117,15 @@
               </transition>
             </div>
             <div class="block" v-for="item in saved" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
-              <span v-on:click="if(item.collapsed == true){item.collapsed = false}else{item.collapsed = true}">
+              <span v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
                 <h3 class="inlined">{{ item.input }}</h3>
                 <i v-if="item.collapsed" class="icon material-icons inlined">arrow_drop_down</i>
                 <span v-if="!item.collapsed">
                   <i class="icon material-icons inlined">arrow_drop_up</i>
                 </span>
               </span>
-              <a class="inlined" style="text-align:right;" id="item.input" v-on:click="removeSaved(item.input)">Forget</a>
-              <p v-if="!item.collapsed" v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
+                <a class="inlined" style="text-align:right;" id="item.input" v-on:click="removeSaved(item.input)">Forget</a>
+                <div v-if="!item.collapsed" v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></div>
             </div>
           </div>
 
@@ -141,14 +141,19 @@
               </transition>
             </div>
             <div class="block" v-for="item in recent" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
-              <div v-on:click="if(item.collapsed == true){item.collapsed = false}else{item.collapsed = true}">
-                <h3 class="inlined">{{ item.input }}</h3>
-                <i v-if="item.collapsed" class="icon material-icons inlined">arrow_drop_down</i>
-                <span v-else>
-                  <i class="icon material-icons inlined">arrow_drop_up</i>
-                  <p v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
-                </span>
+              <div v-if="item.collapsed" v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
+                <h3 class="inlined" >{{ item.input }}</h3>
+                <i class="icon material-icons inlined">arrow_drop_down</i>
               </div>
+                <span v-else>
+                  <div v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
+                    <h3 class="inlined" >{{ item.input }}</h3>
+                    <i class="icon material-icons inlined">arrow_drop_up</i>
+                  </div>
+                  <transition name="fadeSlow">
+                    <p v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
+                  </transition>
+                </span>
             </div>
 
           </div>
@@ -194,7 +199,7 @@
 
   <!-- Framework7 library -->
   <script src="framework7/js/framework7.bundle.min.js"></script>
-
+  <script src="js/jquery-3.4.1.min.js"></script>
 
   <!-- Your custom app scripts -->
   <script src="js/app.js"></script>
@@ -204,6 +209,7 @@
 
 
   <!-- Javascript Files -->
+  <script type="text/javascript" src="js/searchLink.js"></script>
   <script type="text/javascript" src="js/navigation.js"></script>
   <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
