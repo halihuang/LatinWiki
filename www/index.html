@@ -76,7 +76,7 @@
                     <li class="item-content item-input">
                       <div class="item-inner">
                       <div class="item-input-wrap">
-                        <input v-model="input" v-on:keyup.enter="searchLatin();translateLink();" type="text" placeholder="Your Word">
+                        <input id="translationInput" v-model="input" v-on:keyup.enter="searchLatin();translateLink();" type="text" placeholder="Your Word">
                         <span class="input-clear-button"></span>
                       </div>
                       <button v-on:click="searchLatin();translateLink();" class="button button-fill" style="margin-top:1vh"> Enter </button>
