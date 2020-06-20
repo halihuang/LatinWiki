@@ -36,19 +36,19 @@ var mainView = app.views.create('.view-main', {
 });
 
 // Init/Create left panel view
-var leftView = app.views.create('.view-left', {
-  url: '/'
-});
+// var leftView = app.views.create('.view-left', {
+//   url: '/'
+// });
 
 
 // Login Screen Demo
-$$('#my-login-screen .login-button').on('click', function () {
-  var username = $$('#my-login-screen [name="username"]').val();
-  var password = $$('#my-login-screen [name="password"]').val();
-
-  // Close login screen
-  app.loginScreen.close('#my-login-screen');
-
-  // Alert username and password
-  app.dialog.alert('Username: ' + username + '<br>Password: ' + password);
-});
+// $$('#my-login-screen .login-button').on('click', function () {
+//   var username = $$('#my-login-screen [name="username"]').val();
+//   var password = $$('#my-login-screen [name="password"]').val();
+//
+//   // Close login screen
+//   app.loginScreen.close('#my-login-screen');
+//
+//   // Alert username and password
+//   app.dialog.alert('Username: ' + username + '<br>Password: ' + password);
+// });

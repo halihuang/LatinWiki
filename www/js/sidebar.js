@@ -23,7 +23,6 @@ sideBar.changeSideBar = function()
     input.disabled = false;
     this.sidebarCollapse = true;
   }
-  console.log(input);
 };
 
 sideBar.closeSideBar = function(){
@@ -35,6 +34,4 @@ sideBar.closeSideBar = function(){
   mainpg.style.marginLeft = "0";
   input.disabled = false;
   this.sidebarCollapse = true;
-  console.log(input);
-
 };

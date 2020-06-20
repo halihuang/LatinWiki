@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="framework7/css/framework7.bundle.min.css">
   <link rel="stylesheet" href="css/icons.css">
   <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet"href="autoComplete/style.css"/>
+
 </head>
 <body>
   <div id="app">
@@ -75,23 +77,28 @@
                   <ul>
                     <li class="item-content item-input">
                       <div class="item-inner">
-                      <div class="item-input-wrap">
-                        <input id="translationInput" v-model="input" v-on:keyup.enter="searchLatin();translateLink();" type="text" placeholder="Your Word">
-                        <span class="input-clear-button"></span>
-                      </div>
-                      <button v-on:click="searchLatin();translateLink();" class="button button-fill" style="margin-top:1vh"> Enter </button>
-                      <div class="bottom-border"></div>
-                      <div style="margin-top:40px;" class="block text-align-center">
-                        <transition name="fade" mode="out-in">
-                          <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
-                        </transition>
-                        <transition name="fade" mode="out-in">
-                          <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em;">
-                            <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
-                            <p> Please try again!</p>
+                        <div class="display-flex flex-direction-row justify-content-space-between">
+                          <div id="autocomplete" class="autocomplete">
+                            <input id="translationInput" v-model.lazy="input" v-on:keyup.enter="searchLatin();translateLink();" class="autocomplete-input"
+                              type="text" placeholder="Your Word"
+                              aria-label="Your Word" style="width:70vw; border-bottom: 1px solid lightgrey ">
+                            <span class="input-clear-button"></span>
+                            <ul class="autocomplete-result-list"></ul>
                           </div>
-                        </transition>
-                      </div>
+                          <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:20vw"> Enter </button>
+                        </div>
+                        <div class="bottom-border"></div>
+                        <div style="margin-top:40px;" class="block text-align-center">
+                          <transition name="fade" mode="out-in">
+                            <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
+                          </transition>
+                          <transition name="fade" mode="out-in">
+                            <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em;">
+                              <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
+                              <p> Please try again!</p>
+                            </div>
+                          </transition>
+                        </div>
                       <transition name="fadeSlow">
                         <div class="block" id="translationBlock" v-if="!loading">
                           <i class="icon material-icons stacked"  v-on:click="addToSaved"
@@ -198,6 +205,7 @@
   -->
 
   <!-- Framework7 library -->
+  <script src="autoComplete/autocomplete.min.js"></script>
   <script src="framework7/js/framework7.bundle.min.js"></script>
   <script src="js/jquery-3.4.1.min.js"></script>
 
@@ -207,12 +215,13 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 
-
   <!-- Javascript Files -->
   <script type="text/javascript" src="js/searchLink.js"></script>
   <script type="text/javascript" src="js/navigation.js"></script>
   <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/autocomplete.js"></script>
+
 
 </body>
 </html>

@@ -69,10 +69,7 @@ window.main = new Vue({
   methods:{
     searchLatin: function()
     {
-      if(this.input == null && this.input == prevInput){
-        // do nothing
-      }
-      else {
+      if(this.input != null || this.input != this.prevInput){
         this.bookmark = "";
         this.errored = false
         this.translation = "";
@@ -82,17 +79,13 @@ window.main = new Vue({
         {
           this.getSections()
           .catch(error => {
-            console.log(error)
-            this.loading = false;
-            this.errored = true;
+            this.errored(error);
           })
           .then(() => this.loading = true)
           .then(this.findLatinSection)
           .then(this.loadLatin)
           .catch(error => {
-            console.log(error);
-            this.loading = false;
-            this.errored = true;
+            this.errored(error);
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
@@ -104,22 +97,16 @@ window.main = new Vue({
         {
           this.convertToLatin()
           .catch(error => {
-            console.log(error);
-            this.loading = false;
-            this.errored = true;
+            this.errored(error);
           })
           .then(this.getSections)
           .catch(error => {
-            console.log(error);
-            this.loading = false;
-            this.errored = true;
+            this.errored(error);
           })
           .then(this.findLatinSection)
           .then(this.loadLatin)
           .catch(error => {
-            console.log(error)
-            this.loading = false;
-            this.errored = true;
+            this.errored(error);
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
@@ -128,7 +115,6 @@ window.main = new Vue({
           .finally(this.translateLink);
         }
       }
-
     },
 
     // uses yandex api to convert from english to latin
@@ -407,6 +393,13 @@ window.main = new Vue({
       if(!(this.bookmark == "bookmark")) {
         this.bookmark = "bookmark_border";
       }
+    },
+
+    errored: function(err) {
+      console.log(err);
+      this.loading = false;
+      this.errored = true;
+      this.prevInput = "";
     }
 
 
