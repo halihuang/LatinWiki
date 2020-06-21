@@ -59,7 +59,6 @@ window.main = new Vue({
     word:"",
     errored:"",
     sidebarCollapse:true,
-    title:"Latin Wiki",
     recent: [],
     mostRecentKeys:[],
     saved: [],
@@ -69,7 +68,7 @@ window.main = new Vue({
   methods:{
     searchLatin: function()
     {
-      if(this.input != null || this.input != this.prevInput){
+      if(this.input.length > 0 || this.input != this.prevInput){
         this.bookmark = "";
         this.errored = false
         this.translation = "";
@@ -78,14 +77,13 @@ window.main = new Vue({
         if(this.latinToEng)
         {
           this.getSections()
-          .catch(error => {
-            this.errored(error);
+          .catch((error) => {
+            this.error(error);
           })
-          .then(() => this.loading = true)
           .then(this.findLatinSection)
           .then(this.loadLatin)
-          .catch(error => {
-            this.errored(error);
+          .catch((error) => {
+            this.error(error);
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
@@ -97,16 +95,16 @@ window.main = new Vue({
         {
           this.convertToLatin()
           .catch(error => {
-            this.errored(error);
+            this.error(error);
           })
           .then(this.getSections)
           .catch(error => {
-            this.errored(error);
+            this.error(error);
           })
           .then(this.findLatinSection)
           .then(this.loadLatin)
           .catch(error => {
-            this.errored(error);
+            this.error(error);
           })
           .then(this.noResultError)
           .then(this.displayBookmark)
@@ -198,18 +196,6 @@ window.main = new Vue({
       }
     },
 
-    // makes loading true if false and vice versa
-    checkLoading: function(){
-      if(this.loading)
-      {
-        this.loading = false;
-      }
-      else
-      {
-        this.loading = true;
-      }
-    },
-
     // alerts app to error if no result was found
     noResultError: function()
     {
@@ -221,40 +207,6 @@ window.main = new Vue({
       else{
         // do nothing
       }
-    },
-
-    changeSideBar: function() {
-      sideBar.changeSideBar();
-    },
-
-    closeSideBar: function(){
-      sideBar.closeSideBar();
-    },
-
-
-    moveToTranslate: function()
-    {
-      navigation.moveToTranslate();
-    },
-
-    moveToSaved: function()
-    {
-      navigation.moveToSaved();
-    },
-
-    moveToHistory: function()
-    {
-      navigation.moveToHistory();
-    },
-
-    moveToAbout: function()
-    {
-      navigation.moveToAbout();
-    },
-
-    translateLink: function()
-    {
-      linkSearcher.searchLink();
     },
 
     // adds the latest word and its translation to an array in local storage, only adds
@@ -395,17 +347,57 @@ window.main = new Vue({
       }
     },
 
-    errored: function(err) {
+    error: function(err) {
       console.log(err);
       this.loading = false;
       this.errored = true;
       this.prevInput = "";
-    }
+    },
+
+    changeSideBar: function() {
+      sideBar.changeSideBar();
+    },
+
+    closeSideBar: function(){
+      sideBar.closeSideBar();
+    },
+
+
+    moveToTranslate: function()
+    {
+      navigation.moveToTranslate();
+    },
+
+    moveToSaved: function()
+    {
+      navigation.moveToSaved();
+    },
+
+    moveToHistory: function()
+    {
+      navigation.moveToHistory();
+    },
+
+    moveToAbout: function()
+    {
+      navigation.moveToAbout();
+    },
+
+    translateLink: function()
+    {
+      linkSearcher.searchLink();
+    },
+
 
 
   },
   mounted(){
     this.translateLink();
+    setTimeout(() => {
+      this.$refs.startLoader.style.display = 'none';
+      this.$refs.pages.style.display = 'block';
+    }, 200)
+
   }
 
 });

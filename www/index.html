@@ -44,7 +44,7 @@
         <div class="navbar" style="width:2000px; margin-left:-90px">
           <div class="navbar-inner" style="margin-left:100px">
             <i v-on:click="changeSideBar" class="icon material-icons inlined">menu</i>
-            <div class="title sliding inlined">{{this.title}}</div>
+            <div class="title sliding inlined">Latin Wiki</div>
           </div>
         </div>
 
@@ -63,7 +63,9 @@
         <div class="page-content" v-on:click="closeSideBar">
 
           <!-- Translate Page -->
-          <div>
+          <img ref="startLoader" style="left:50%; position:relative; top:50%; transition:0.3s; transform: translate(-50%, -50%)  "src="img/loading.gif">
+
+          <div ref="pages" style="display:none; transition:0.3s">
             <div id="pageTranslate">
               <div v-on:click="changeLanguage" class="block-title" style="font-weight:bold;font-size:1.5em;word-spacing:2px;color:#0c82df;margin-top:20px; margin-bottom:-3vh">
                 <p v-if="latinToEng" class="inlined">Latin</p>
@@ -85,16 +87,18 @@
                             <span class="input-clear-button"></span>
                             <ul class="autocomplete-result-list"></ul>
                           </div>
-                          <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:20vw"> Enter </button>
+                          <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:25vw">
+                             <i class="icon material-icons stacked">search</i> </button>
                         </div>
                         <div class="bottom-border"></div>
                         <div style="margin-top:40px;" class="block text-align-center">
                           <transition name="fade" mode="out-in">
-                            <p style="font-weight:500;font-size:1.3em;" v-if="loading">Loading...</p>
+                            <img src="img/loading.gif" v-if="loading">
                           </transition>
                           <transition name="fade" mode="out-in">
                             <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em;">
-                              <p>Uh oh! Something very unaesthetically pleeaasing occured...</p>
+                              <i class="icon material-icons stacked" style="font-size: 36px;">error_outline</i>
+                              <p>Something very unaesthetically pleeaasing occured...</p>
                               <p> Please try again!</p>
                             </div>
                           </transition>
