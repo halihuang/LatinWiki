@@ -21,6 +21,14 @@
   display: inline-block;
 }
 
+.icon {
+  color:#0c82df
+}
+
+.search-icon {
+  color:#FFFFFF !important
+}
+
 .bottom-border {
    border-bottom-width:5px;
    border-bottom-style:solid;

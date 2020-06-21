@@ -51,10 +51,46 @@
         <div id= "navSidebar" class="list links-list sidebar">
           <div class="navbar"></div>
           <ul style="margin-top:20px">
-            <li><a v-on:click="moveToTranslate">Translate</a></li>
-            <li><a v-on:click="loadSaved(); moveToSaved(); ">Saved</a></li>
-            <li><a v-on:click="loadRecent(); moveToHistory(); ">History</a></li>
-            <li><a v-on:click="moveToAbout">About</a></li>
+            <li>
+              <a v-on:click="moveToTranslate">
+                <i class="icon material-icons no-padding no-margin">find_in_page</i>
+                <p>Translate</p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </a>
+            </li>
+            <li>
+              <a v-on:click="loadSaved(); moveToSaved(); ">
+                <i class="icon material-icons no-padding no-margin">bookmark</i>
+                <p>Saved</p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </a>
+            </li>
+            <li>
+              <a v-on:click="loadRecent(); moveToHistory(); ">
+                <i class="icon material-icons no-padding no-margin">history</i>
+                <p>History</p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </a>
+            </li>
+            <li>
+              <a v-on:click="moveToAbout">
+                <i class="icon material-icons no-padding no-margin">info</i>
+                <p>About</p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -88,7 +124,7 @@
                             <ul class="autocomplete-result-list"></ul>
                           </div>
                           <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:25vw">
-                             <i class="icon material-icons stacked">search</i> </button>
+                             <i class="icon search-icon material-icons stacked">search</i> </button>
                         </div>
                         <div class="bottom-border"></div>
                         <div style="margin-top:40px;" class="block text-align-center">
