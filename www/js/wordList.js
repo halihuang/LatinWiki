@@ -161,7 +161,7 @@ var findDefinitions = async function(lemma){
         + '&section='+ section.id + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
         .catch((err) => {console.log("could not find sections of page")});
         if(latinPage){
-          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "external", "Citations:", 'p\\.\\s?\\d+', '\\b\\d{4}\\b', "Template:rfdef", "ce-date"]
+          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "extiw", "form-of-definition", "external", "Citations:", 'p\\.\\s?\\d+', '\\b\\d{4}\\b', "Template:rfdef", "ce-date"]
           let data = latinPage.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split(/<li[^>]*>/ig);
           data = data.filter((text) => {
             return !includes(text, blackListed)})
