@@ -135,7 +135,7 @@
                             <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em; margin-top:30px;">
                               <i class="icon material-icons stacked" style="font-size: 36px;">error_outline</i>
                               <p>Something very unaesthetically pleeaasing occured...</p>
-                              <p> Please try again!</p>
+                              <p> No results were found.</p>
                             </div>
                           </transition>
                         </div>
@@ -265,21 +265,13 @@
 </div>
 
 
-
-  <!-- Cordova -->
-  <!--
-  <script src="cordova.js"></script>
-  -->
-
-  <!-- Framework7 library -->
+  <!-- Framework library -->
   <script src="autoComplete/autocomplete.min.js"></script>
   <script src="framework7/js/framework7.bundle.min.js"></script>
   <script src="js/jquery-3.4.1.min.js"></script>
-
-  <!-- Your custom app scripts -->
   <script src="js/app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="js/vue.min.js"></script>
+  <script src="axios/axios.min.js"></script>
 
 
   <!-- Javascript Files -->
@@ -288,7 +280,6 @@
   <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
   <script type="text/javascript" src="js/autocomplete.js"></script>
-  <!-- <script type="text/javascript" src="js/wordList.js"></script> -->
 
 
 </body>

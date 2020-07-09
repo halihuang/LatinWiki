@@ -70,7 +70,7 @@ window.main = new Vue({
   methods:{
     searchLatin:async function(resetEng)
     {
-      if(this.input.length > 0 || this.input != this.prevInput){
+      if(this.input.length > 0 && this.input != this.prevInput){
         this.bookmark = "";
         this.translation = "";
         this.possibleLatin = [];
@@ -87,12 +87,14 @@ window.main = new Vue({
           });
           if(!this.errored){
             this.findLatinSection();
-            await this.loadLatin().catch((err) => {
+            var res = await this.loadLatin().catch((err) => {
               this.error(err);
             });
+            if(res == 'failure'){
+              this.error();
+            }
           }
-          if(!this.errored){
-            this.noResultError();
+          if(!this.errored && !this.noResultError()){
             this.displayBookmark();
             this.addToRecent();
             this.loading = false; this.errored = false;
@@ -147,7 +149,7 @@ window.main = new Vue({
             }
           }
         }
-        if(item.rating && item.rating >= 0.7){
+        if(item.rating && item.rating >= 0.4){
           if(item.bestMatch == item.definitions[0]){
             item.rating += 0.1;
           }
@@ -178,93 +180,18 @@ window.main = new Vue({
      // to get the html content and load it
     loadLatin: function()
     {
-      // console.log(this.sectionList);
-      // var latinWord = {latin: this.word, definitions: []}
-      var promise;
+      var promise = Promise.resolve('failure');
       for(section of this.sectionList)
       {
         promise = axios.get('https://en.wiktionary.org/w/api.php?action=parse&page='+ this.word + '&noimages=true'
         + '&section='+ section + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
         .then((response) => {
           this.translation += response.data.parse.text["*"] + '<br>';
-          // this.extractDefinitions(latinWord, response);
         });
       }
-      // console.log(latinWord);
       return promise;
     },
 
-    extractDefinitions: function(latinWord, response){
-      function includes( definition, list) {
-        // var blackList = ["#Latin", ":", ";", "circa", "cited-source", "wiktQuote", "brac"];
-        for(element of list){
-          if(definition.indexOf(element) != -1){
-            return true;
-          }
-        }
-        return false;
-      }
-
-      function substringLine(line, str){
-        var index = line.indexOf(str);
-        if(index != -1){
-          return line.substring(index + str.length);
-        }
-        return line;
-      }
-
-      function isLetter(str, index, exceptions){
-        var char = str.charAt(index);
-        if (char.toUpperCase() != char.toLowerCase() || exceptions.includes(char)){
-          return true;
-        }
-        return false;
-      }
-
-      function filterAddDef(str, arr){
-        if(str.charAt(0) == " "){
-          str = str.substring(1);
-        }
-        for(var i = 0; i < str.length; i++){
-          if(!isLetter(str, i, [" "])){
-            str = str.substring(0, i);
-          }
-        }
-        if(str.charAt(str.length - 1) == " "){
-          str = str.substring(0, str.length - 1);
-        }
-        if(!arr.includes(str)){
-          arr.push(str);
-        }
-      }
-
-      var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external"]
-      let data = response.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split("<li>");
-      data = data.filter((text) => {
-        return !includes(text, blackListed)})
-      console.log(data);
-
-      data.forEach((line, i) => {
-        if(i > 0){
-          line = line.split("<dl>")[0];
-          line = substringLine(line, ": ");
-          line = substringLine(line, 'ib-brac">)');
-          line = substringLine(line, 'gloss-brac">)');
-          line = line.replace(/<\/?[^>]+>/ig, "");
-          console.log(line);
-
-          if(line.indexOf(",") != -1){
-            var defs = line.split(",");
-            for(def of defs){
-              filterAddDef(def, latinWord.definitions);
-            }
-          }
-          else{
-            filterAddDef(line, latinWord.definitions);
-          }
-        }
-      });
-    },
 
 
     //This function will filter the section data recieved from Wikitionary
@@ -330,11 +257,12 @@ window.main = new Vue({
     {
       if(this.translation === ""){
         this.errored = true;
-        return Promise.reject('err');
         this.loading = false;
+        return true;
       }
       else{
         // do nothing
+        return false;
       }
     },
 
@@ -345,7 +273,6 @@ window.main = new Vue({
       // localStorage.removeItem('recent');
       var recentArray = JSON.parse(localStorage.getItem('recent'));
       var recentObj = {input:this.prevInput, collapsed:true}
-      console.log(this.latinToEng);
       if(this.latinToEng){
         recentObj.translation = this.translation;
       }
@@ -549,11 +476,6 @@ window.main = new Vue({
       this.$refs.startLoader.style.display = 'none';
       this.$refs.pages.style.display = 'block';
     }, 200);
-    // axios.get('./definitions.json').catch((err) => {console.log("err getting defs: ", err)}).then((response) => {
-    //   this.definitions = response.data;
-    //
-    // });
-
   }
 
 });
