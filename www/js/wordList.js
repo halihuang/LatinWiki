@@ -161,7 +161,7 @@ var findDefinitions = async function(lemma){
         + '&section='+ section.id + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
         .catch((err) => {console.log("could not find sections of page")});
         if(latinPage){
-          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external", 'p\\.\\s?\\d+']
+          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "external", "Citations:", 'p\\.\\s?\\d+', '\\b\\d{4}\\b', "Template:rfdef", "ce-date"]
           let data = latinPage.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split(/<li[^>]*>/ig);
           data = data.filter((text) => {
             return !includes(text, blackListed)})
@@ -169,13 +169,13 @@ var findDefinitions = async function(lemma){
             if(i > 0){
               line = line.split("<dl>")[0];
               line = line.split(/<[^>]+"maintenance-line"[^>]+>/)[0];
-              line = substringLine(line, ":");
               line = substringLine(line, 'ib-brac">)');
               line = line.split("</li>")[0];
               line = htmlToText.fromString(line, {
                 wordwrap: false,
                 ignoreHref: true,
               });
+              line = substringLine(line, ":");
               var defs = line.split(",");
               for(def of defs){
                 var finalDefs = def.split(";");
@@ -242,15 +242,16 @@ function filterAddDef(str, arr){
   if(str.charAt(0) == " "){
     str = str.substring(1);
   }
-  var lastChar = str.charAt(str.length - 1)
-  if(lastChar == " " || lastChar == "."){
+  var lastChar = str.charAt(str.length - 1);
+  while(lastChar == " " || lastChar == "." || lastChar == '\n' || lastChar == '\r')
+  {
     str = str.substring(0, str.length - 1);
+    var lastChar = str.charAt(str.length - 1);
   }
   if(!arr.includes(str)){
     arr.push(str);
   }
 }
-
 
 
 // wordList();
