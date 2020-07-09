@@ -147,35 +147,40 @@ var findDefinitions = async function(lemma){
         }
         if(latinSection == sectionNumber && (checkWhitelist(item.line)))
         {
-          latinSections.unshift(item.index);
+          let validSection = {id:item.index, partOfSpeech:item.line}
+          latinSections.unshift(validSection);
         }
       }
-      var latinWord = {latin: lemma.title, definitions: []}
+      var latinWord = {latin: lemma.title, definitions: [], partsOfSpeech:[]}
       for(section of latinSections)
       {
+        if(!latinWord.partsOfSpeech.includes(section.partOfSpeech)){
+          latinWord.partsOfSpeech.push(section.partOfSpeech);
+        }
         latinPage = await axios.get('https://en.wiktionary.org/w/api.php?action=parse&pageid='+ lemma.pageid + '&noimages=true'
-        + '&section='+ section + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
+        + '&section='+ section.id + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
         .catch((err) => {console.log("could not find sections of page")});
         if(latinPage){
-          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external"]
-          let data = latinPage.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split("<li>");
+          var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external", 'p\\.\\s?\\d+']
+          let data = latinPage.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split(/<li[^>]*>/ig);
           data = data.filter((text) => {
             return !includes(text, blackListed)})
           data.forEach((line, i) => {
             if(i > 0){
               line = line.split("<dl>")[0];
-              line = substringLine(line, ": ");
+              line = line.split(/<[^>]+"maintenance-line"[^>]+>/)[0];
+              line = substringLine(line, ":");
               line = substringLine(line, 'ib-brac">)');
-              line = substringLine(line, 'gloss-brac">)');
+              line = line.split("</li>")[0];
               line = htmlToText.fromString(line, {
                 wordwrap: false,
                 ignoreHref: true,
               });
               var defs = line.split(",");
               for(def of defs){
-                finalDefs = def.split(";");
+                var finalDefs = def.split(";");
                 for(finalDef of finalDefs){
-                  filterAddDef(def, latinWord.definitions);
+                  filterAddDef(finalDef, latinWord.definitions);
                 }
               }
             }
@@ -208,9 +213,9 @@ function validLemma(word){
 }
 
 function includes( definition, list) {
-  // var blackList = ["#Latin", ":", ";", "circa", "cited-source", "wiktQuote", "brac"];
   for(element of list){
-    if(definition.indexOf(element) != -1){
+    var regex = new RegExp(element, 'ig')
+    if(regex.test(definition)){
       return true;
     }
   }

@@ -179,26 +179,29 @@ window.main = new Vue({
     loadLatin: function()
     {
       // console.log(this.sectionList);
-      // var latinWord = {latin: this.word, definitions: []}
+      var latinWord = {latin: this.word, definitions: [], partsOfSpeech:[]}
       var promise;
       for(section of this.sectionList)
       {
+        if(!latinWord.partsOfSpeech.includes(section.partOfSpeech)){
+          latinWord.partsOfSpeech.push(section.partOfSpeech);
+        }
         promise = axios.get('https://en.wiktionary.org/w/api.php?action=parse&page='+ this.word + '&noimages=true'
-        + '&section='+ section + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
+        + '&section='+ section.id + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
         .then((response) => {
           this.translation += response.data.parse.text["*"] + '<br>';
-          // this.extractDefinitions(latinWord, response);
+          this.extractDefinitions(latinWord, response);
         });
       }
-      // console.log(latinWord);
+      console.log(latinWord);
       return promise;
     },
 
     extractDefinitions: function(latinWord, response){
       function includes( definition, list) {
-        // var blackList = ["#Latin", ":", ";", "circa", "cited-source", "wiktQuote", "brac"];
         for(element of list){
-          if(definition.indexOf(element) != -1){
+          var regex = new RegExp(element, 'ig')
+          if(regex.test(definition)){
             return true;
           }
         }
@@ -225,12 +228,8 @@ window.main = new Vue({
         if(str.charAt(0) == " "){
           str = str.substring(1);
         }
-        for(var i = 0; i < str.length; i++){
-          if(!isLetter(str, i, [" "])){
-            str = str.substring(0, i);
-          }
-        }
-        if(str.charAt(str.length - 1) == " "){
+        var lastChar = str.charAt(str.length - 1)
+        if(lastChar == " " || lastChar == "."){
           str = str.substring(0, str.length - 1);
         }
         if(!arr.includes(str)){
@@ -238,29 +237,25 @@ window.main = new Vue({
         }
       }
 
-      var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external"]
-      let data = response.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split("<li>");
+      var blackListed = ["wiktQuote", "/wiki/Category", "citation-whole", "form-of-definition", "extiw", "external", 'p\\.\\s?\\d+']
+      let data = response.data.parse.text["*"].split("Latn headword")[1].split("mw-headline")[0].split(/<li[^>]*>/ig);
       data = data.filter((text) => {
         return !includes(text, blackListed)})
       console.log(data);
-
       data.forEach((line, i) => {
         if(i > 0){
           line = line.split("<dl>")[0];
-          line = substringLine(line, ": ");
+          line = line.split(/<[^>]+"maintenance-line"[^>]+>/)[0];
+          line = substringLine(line, ":");
           line = substringLine(line, 'ib-brac">)');
-          line = substringLine(line, 'gloss-brac">)');
+          line = line.split("</li>")[0];
           line = line.replace(/<\/?[^>]+>/ig, "");
-          console.log(line);
-
-          if(line.indexOf(",") != -1){
-            var defs = line.split(",");
-            for(def of defs){
-              filterAddDef(def, latinWord.definitions);
+          var defs = line.split(",");
+          for(def of defs){
+            var finalDefs = def.split(";");
+            for(finalDef of finalDefs){
+              filterAddDef(finalDef, latinWord.definitions);
             }
-          }
-          else{
-            filterAddDef(line, latinWord.definitions);
           }
         }
       });
@@ -298,7 +293,8 @@ window.main = new Vue({
           var latinSection = sectionNumber;
         }
         if(sectionNumber == latinSection && (this.checkWhitelist(item.line))){
-          this.sectionList.unshift(item.index);
+          let validSection = {id:item.index, partOfSpeech:item.line}
+          this.sectionList.unshift(validSection);
         }
       }
     },
@@ -345,7 +341,6 @@ window.main = new Vue({
       // localStorage.removeItem('recent');
       var recentArray = JSON.parse(localStorage.getItem('recent'));
       var recentObj = {input:this.prevInput, collapsed:true}
-      console.log(this.latinToEng);
       if(this.latinToEng){
         recentObj.translation = this.translation;
       }
