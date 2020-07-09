@@ -1,20 +1,25 @@
 # Latin Wiki
 
-Simple english to latin and vice versa translator
+Latin Wiki is a Cordova web app built with Framework7 and Vue.js that translates Latin to English and English to Latin.
+It translates words by using the MediaWiki API to obtain information from Wikitionary, an online multi-lingual dictionary.
+Searches will also provide you with more detailed information about your word's latin form such as its declension, conjugation, and synonyms.
 
-## Usage
+
+## Local Usage
 
 ### 1. Clone this repository
 
-
+```
+git clone https://github.com/halihuang/LatinWiki
+```
 ### 2. Install dependencies
 
-Go to the downloaded repository folder and run:
 ```
+cd LatinWiki
 npm install
 ```
 
-### 3. Run the app
+### 3. Running the app locally
 
 ```
 npm run serve
@@ -22,7 +27,8 @@ npm run serve
 
 App will be opened in browser at `http://localhost:8080/`
 
-## Move to device
+## Downloading to Device
+Connect your computer and device with a cable and run the following command depending on your phone's operating system
 
 ```
 cordova run android

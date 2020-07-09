@@ -123,35 +123,49 @@
                             <span class="input-clear-button"></span>
                             <ul class="autocomplete-result-list"></ul>
                           </div>
-                          <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:25vw">
+                          <button v-on:click="searchLatin();translateLink();" class="button button-fill align-self-flex-end" style="width:40vw">
                              <i class="icon search-icon material-icons stacked">search</i> </button>
                         </div>
                         <div class="bottom-border"></div>
-                        <div style="margin-top:40px;" class="block text-align-center">
+                        <div class="block text-align-center">
                           <transition name="fade" mode="out-in">
-                            <img src="img/loading.gif" v-if="loading">
+                            <img src="img/loading.gif" v-if="loading"  style="margin-top:30px;" >
                           </transition>
                           <transition name="fade" mode="out-in">
-                            <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em;">
+                            <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em; margin-top:30px;">
                               <i class="icon material-icons stacked" style="font-size: 36px;">error_outline</i>
                               <p>Something very unaesthetically pleeaasing occured...</p>
                               <p> Please try again!</p>
                             </div>
                           </transition>
                         </div>
-                      <transition name="fadeSlow">
-                        <div class="block" id="translationBlock" v-if="!loading">
-                          <i class="icon material-icons stacked"  v-on:click="addToSaved"
-                          style="left:250px;top:20px;color:#0c82df">{{ bookmark }}</i>
-                          <div v-html="translation" style="margin-top:5px;"></div>
-                        </div>
-                      </transition>
-                    </li>
-                  </ul>
+                        <transition name="fadeSlow">
+                          <div  v-if="possibleLatin.length > 0" ref="engResults">
+                            <h3>Results</h3>
+                            <div v-for="word in possibleLatin" style="padding-bottom: 10px;border-bottom: 1px solid #C0C0C0; justify-content:center">
+                              <div style="margin-bottom:-20px;" v-on:click="searchTranslatedWord(word.latin)"><h3 class="inlined">{{word.latin}}</h3> <a class="inlined">&emsp;more</a></div>
+                              <h4 >Definitions</h4>
+                                <ul>
+                                  <li v-for="(definition, index) in word.definitions" >
+                                    <span><b>{{index + 1}}. </b> </span><span style="text-decoration: underline #0c82df; justify-content:center">{{definition}}</span>
+                                  </li>
+                                </ul>
+                            </div>
+                          </div>
+                        </transition>
+                        <transition name="fadeSlow">
+                          <div class="block" id="translationBlock" v-if="!loading && translation.length > 0">
+                            <span style="position:relative;left:35%;top:45px;"><i class="icon material-icons stacked"  v-on:click="addToSaved"
+                            style="color:#0c82df">{{ bookmark }}</i> {{bookmarkMessage}}</span>
+                            <div v-html="translation" style="margin-top:5px;"></div>
+                          </div>
+                        </transition>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
 
           <!-- Saved Translations Page -->
@@ -165,7 +179,7 @@
             </div>
             <div class="block" v-for="item in saved" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
               <span v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
-                <h3 class="inlined">{{ item.input }}</h3>
+                <h3 class="inlined">{{ item.input }}<span v-if="item.eng"> (translated from {{item.eng}})</span></h3>
                 <i v-if="item.collapsed" class="icon material-icons inlined">arrow_drop_down</i>
                 <span v-if="!item.collapsed">
                   <i class="icon material-icons inlined">arrow_drop_up</i>
@@ -189,43 +203,56 @@
             </div>
             <div class="block" v-for="item in recent" style="border-bottom: 1px solid #C0C0C0; justify-content:center; margin:15px 0 0 0">
               <div v-if="item.collapsed" v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
-                <h3 class="inlined" >{{ item.input }}</h3>
+                <h3 class="inlined" >{{ item.input }}<span v-if="item.eng"> (translated from {{item.eng}})</span></h3>
                 <i class="icon material-icons inlined">arrow_drop_down</i>
               </div>
-                <span v-else>
-                  <div v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
-                    <h3 class="inlined" >{{ item.input }}</h3>
-                    <i class="icon material-icons inlined">arrow_drop_up</i>
-                  </div>
-                  <transition name="fadeSlow">
-                    <p v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
-                  </transition>
-                </span>
+              <span v-else>
+                <div v-on:click="if(item.collapsed == true){item.collapsed = false;}else{item.collapsed = true;}translateLink();">
+                  <h3 class="inlined" >{{ item.input }}<span v-if="item.eng"> (translated from {{item.eng}})</span></h3>
+                  <i class="icon material-icons inlined">arrow_drop_up</i>
+                </div>
+                <transition name="fadeSlow">
+                  <p v-html="item.translation" style="margin-top:5px; display:flex; flex-direction: column;"></p>
+                </transition>
+              </span>
             </div>
 
           </div>
 
           <!-- About Page -->
           <div id="pageAbout" class="main-pgview">
-            <div class="block-title">About My App</div>
+            <div class="block-title">About LatinWiki</div>
             <div class="block block-strong">
-              <p>This app allows users to translate from English to Latin and back through the use of the Yandex Translate and Wikitionary APIS. It also tracks
-              your recently translated words down in a History page and allows you to save words too.</p>
+              <p>LatinWiki is a web app that translates English to Latin and back while providing detailed information about your word's latin form.
+                It informs of the word's part of speech, conjugation or declension, gender and more. LatinWiki also provides aesthetically pleasing and clear declension and conjugation charts for your words.
+                LatinWiki seeks to help you define your and obtain relevant information important to your understanding of the word at the same time.
+              </p>
             </div>
-            <div class="block-title">About The Author</div>
+            <div class="block-title">How to Use</div>
             <div class="block block-strong">
-              <p> Hi, I'm Hali Huang, the creator of this app! As a student currently enrolled in a Latin course, I found the latin translators currently avaliable to be lacking.
-              While many translators would provide you with an accurately translated word, they would tell you very little important information about the word like the declensions it is in
-              or the conjugations of the word. After a year of plugging words between multiple websites, I got the brilliant idea to make the process easier
-              by making an app to do the process for me. So that's we got here. This was the first app I ever made, and I'm pretty happy with the way it turned out. Hope you enjoy!</p>
+              <ul>
+                <li>
+                  Press the arrow at the top where it says "English => Latin" or "Latin => English" to change which language you are translating from.
+                </li>
+                Type in your word or phrase where it says your word and press the search button or hit enter to begin your search.
+                <li>
+                  If you are translating from english to Latin, you will see a page displaying matches. Click on a result to get more information about it.
+                </li>
+                On the resulting page, you can click on any words highlighted blue to quickly search them.
+                <li>
+                  You can also save and unsave a searched word by clicking on the bookmark below the search bar. View your saved result in the saved tab.
+                </li>
+                <li>
+                  Your history of searched words can also be viewed in the History tab.
+                </li>
+
+
+              </ul>
             </div>
             <div class="block-title">Contact Me</div>
             <div class="block block-strong">
               <span>
-                <p>LinkedIn:</p>
-                <a href=www.linkedin.com/in/hali-huang-42773918b>www.linkedin.com/in/hali-huang-42773918b</a>
-                <p>GitHub:</p>
-                <a href=https://github.com/halihuang>https://github.com/halihuang</a>
+                <p>Email: halihuang22@gmail.com</p>
               </span>
             </div>
           </div>
@@ -261,6 +288,7 @@
   <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
   <script type="text/javascript" src="js/autocomplete.js"></script>
+  <!-- <script type="text/javascript" src="js/wordList.js"></script> -->
 
 
 </body>
