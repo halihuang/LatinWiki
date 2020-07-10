@@ -171,18 +171,19 @@ window.main = new Vue({
     {
       // console.log(this.sectionList);
       var latinWord = {latin: this.word, definitions: [], partsOfSpeech:[]}
-      var translation;
-      for(section of this.sectionList)
+      var translation = "";
+      for(section of sectionList)
       {
         if(!latinWord.partsOfSpeech.includes(section.partOfSpeech)){
           latinWord.partsOfSpeech.push(section.partOfSpeech);
         }
-        translation = await axios.get('https://en.wiktionary.org/w/api.php?action=parse&page='+ this.word + '&noimages=true'
+        response = await axios.get('https://en.wiktionary.org/w/api.php?action=parse&page='+ this.word + '&noimages=true'
         + '&section='+ section.id + '&disablelimitreport=true' + '&disableeditsection=true' + '&format=json' +'&mobileformat=true' + '&prop=text'+ '&origin=*')
-        .then((response) => {
-          this.translation += response.data.parse.text["*"] + '<br>';
-          this.extractDefinitions(latinWord, response);
-        });
+        translation += response.data.parse.text["*"] + '<br>';
+        this.extractDefinitions(latinWord, response);
+      }
+      if(translation.length == 0){
+        return Promise.reject();
       }
       console.log(latinWord);
       return translation;
@@ -198,8 +199,13 @@ window.main = new Vue({
         }
         return false;
       }
-      if(translation.length == 0){
-        return Promise.reject();
+
+      function substringLine(line, str){
+        var index = line.indexOf(str);
+        if(index != -1){
+          return line.substring(index + str.length);
+        }
+        return line;
       }
 
       function isLetter(str, index, exceptions){
@@ -214,11 +220,11 @@ window.main = new Vue({
         if(str.charAt(0) == " "){
           str = str.substring(1);
         }
-        var lastChar = str.charAt(str.length - 1)
+        var lastChar = str.charAt(str.length - 1);
         while(lastChar == " " || lastChar == "." || lastChar == '\n' || lastChar == '\r')
         {
           str = str.substring(0, str.length - 1);
-          var lastChar = str.charAt(str.length - 1)
+          var lastChar = str.charAt(str.length - 1);
         }
         if(!arr.includes(str)){
           arr.push(str);
@@ -283,8 +289,7 @@ window.main = new Vue({
         }
         if(sectionNumber == latinSection && (this.checkWhitelist(item.line))){
           let validSection = {id:item.index, partOfSpeech:item.line}
-          this.sectionList.unshift(validSection);
-          sectionList.unshift(item.index);
+          sectionList.unshift(validSection);
         }
       }
       return sectionList;
