@@ -1,54 +1,66 @@
-window.navigation = {};
+var translatedBlock;
+var savedBlock;
+var historyBlock;
+var aboutBlock;
+var helpBlock;
 
+var setPageBlocks = function(){
+  translatedBlock = document.getElementById('pageTranslate');
+  savedBlock = document.getElementById('pageSaved');
+  historyBlock = document.getElementById('pageHistory');
+  aboutBlock = document.getElementById('pageAbout');
+  helpBlock = document.getElementById('pageHelp');
+}
 
-navigation.moveToSaved = function()
+var moveToSaved = function()
 {
-  var translatedBlock = document.getElementById('pageTranslate');
-  var savedBlock = document.getElementById('pageSaved');
-  var historyBlock = document.getElementById('pageHistory');
-  var aboutBlock = document.getElementById('pageAbout');
+  main.loadSaved();
   translatedBlock.style.display= "none";
   savedBlock.style.display= "block";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "none";
-  navigation.title="Saved";
+  helpBlock.style.display= "none";
+  main.title='<i class="icon material-icons no-padding inlined" style="margin-bottom:5px">bookmark</i>';
 }
 
-navigation.moveToHistory = function()
+var moveToHistory = function()
 {
-  var translatedBlock = document.getElementById('pageTranslate');
-  var savedBlock = document.getElementById('pageSaved');
-  var historyBlock = document.getElementById('pageHistory');
-  var aboutBlock = document.getElementById('pageAbout');
+  main.loadRecent();
   translatedBlock.style.display= "none";
   savedBlock.style.display= "none";
   historyBlock.style.display= "block";
   aboutBlock.style.display= "none";
-  navigation.title="History";
+  helpBlock.style.display= "none";
+  main.title='<i class="icon material-icons no-padding inlined" style="margin-bottom:5px">history</i>';
 }
 
-navigation.moveToAbout = function()
+var moveToAbout = function()
 {
-  var translatedBlock = document.getElementById('pageTranslate');
-  var savedBlock = document.getElementById('pageSaved');
-  var historyBlock = document.getElementById('pageHistory');
-  var aboutBlock = document.getElementById('pageAbout');
   translatedBlock.style.display= "none";
   savedBlock.style.display= "none";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "block";
-  navigation.title="About";
+  helpBlock.style.display= "none";
+  main.title='<i class="icon material-icons no-padding inlined" style="margin-bottom:5px">info</i>';
 }
 
-navigation.moveToTranslate = function()
+var moveToTranslate = function()
 {
-  var translatedBlock = document.getElementById('pageTranslate');
-  var savedBlock = document.getElementById('pageSaved');
-  var historyBlock = document.getElementById('pageHistory');
-  var aboutBlock = document.getElementById('pageAbout');
   translatedBlock.style.display= "block";
   savedBlock.style.display= "none";
   historyBlock.style.display= "none";
   aboutBlock.style.display= "none";
-  navigation.title="Latin Wiki";
+  helpBlock.style.display= "none";
+  main.title='<i class="icon material-icons no-padding inlined" style="margin-bottom:5px">find_in_page</i>';
+}
+
+
+var moveToHelp = function()
+{
+  translatedBlock.style.display= "none";
+  savedBlock.style.display= "none";
+  historyBlock.style.display= "none";
+  aboutBlock.style.display= "none";
+  helpBlock.style.display= "block";
+  main.title='<i class="icon material-icons no-padding inlined" style="margin-bottom:5px">help</i>';
 }

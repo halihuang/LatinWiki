@@ -44,7 +44,7 @@
         <div class="navbar" style="width:2000px; margin-left:-90px">
           <div class="navbar-inner" style="margin-left:100px">
             <i v-on:click="changeSideBar" class="icon material-icons inlined">menu</i>
-            <div class="title sliding inlined">Latin Wiki</div>
+            <div class="title sliding inlined">Latin Wiki&nbsp;&nbsp;<span class="text-align-right" v-html="title"></span></div>
           </div>
         </div>
 
@@ -52,9 +52,9 @@
           <div class="navbar"></div>
           <ul style="margin-top:20px">
             <li>
-              <a v-on:click="moveToTranslate">
+              <a onclick="moveToTranslate()">
                 <i class="icon material-icons no-padding no-margin">find_in_page</i>
-                <p>Translate</p>
+                <p>Search</p>
                 <p></p>
                 <p></p>
                 <p></p>
@@ -62,7 +62,7 @@
               </a>
             </li>
             <li>
-              <a v-on:click="loadSaved(); moveToSaved(); ">
+              <a onclick="moveToSaved()">
                 <i class="icon material-icons no-padding no-margin">bookmark</i>
                 <p>Saved</p>
                 <p></p>
@@ -72,7 +72,7 @@
               </a>
             </li>
             <li>
-              <a v-on:click="loadRecent(); moveToHistory(); ">
+              <a onclick="moveToHistory()">
                 <i class="icon material-icons no-padding no-margin">history</i>
                 <p>History</p>
                 <p></p>
@@ -82,7 +82,17 @@
               </a>
             </li>
             <li>
-              <a v-on:click="moveToAbout">
+              <a v-on:click="moveToHelp()">
+                <i class="icon material-icons no-padding no-margin">help</i>
+                <p>Help</p>
+                <p></p>
+                <p></p>
+                <p></p>
+                <p></p>
+              </a>
+            </li>
+            <li>
+              <a v-on:click="moveToAbout()">
                 <i class="icon material-icons no-padding no-margin">info</i>
                 <p>About</p>
                 <p></p>
@@ -115,6 +125,8 @@
                   <ul>
                     <li class="item-content item-input">
                       <div class="item-inner">
+
+
                         <div class="display-flex flex-direction-row justify-content-space-between">
                           <div id="autocomplete" class="autocomplete">
                             <input id="translationInput" v-model.lazy="input" v-on:keyup.enter="searchLatin();translateLink();" class="autocomplete-input"
@@ -127,6 +139,8 @@
                              <i class="icon search-icon material-icons stacked">search</i> </button>
                         </div>
                         <div class="bottom-border"></div>
+
+
                         <div class="block text-align-center">
                           <transition name="fade" mode="out-in">
                             <img src="img/loading.gif" v-if="loading"  style="margin-top:30px;" >
@@ -134,25 +148,34 @@
                           <transition name="fade" mode="out-in">
                             <div v-if="errored && !loading" style="font-weight:500;font-size:1.1em; margin-top:30px;">
                               <i class="icon material-icons stacked" style="font-size: 36px;">error_outline</i>
-                              <p>Something very unaesthetically pleeaasing occured...</p>
-                              <p> Please try again!</p>
+                              <p>Something went wrong...</p>
+                              <p> No results were found.</p>
                             </div>
                           </transition>
                         </div>
+
+
                         <transition name="fadeSlow">
                           <div  v-if="possibleLatin.length > 0" ref="engResults">
-                            <h3>Results</h3>
+                            <h3 class="inlined">Results</h3>&emsp;<i class="icon material-icons stacked inlined" style="font-size: 24px;">assignment</i>
                             <div v-for="word in possibleLatin" style="padding-bottom: 10px;border-bottom: 1px solid #C0C0C0; justify-content:center">
-                              <div style="margin-bottom:-20px;" v-on:click="searchTranslatedWord(word.latin)"><h3 class="inlined">{{word.latin}}</h3> <a class="inlined">&emsp;more</a></div>
-                              <h4 >Definitions</h4>
-                                <ul>
-                                  <li v-for="(definition, index) in word.definitions" >
-                                    <span><b>{{index + 1}}. </b> </span><span style="text-decoration: underline #0c82df; justify-content:center">{{definition}}</span>
-                                  </li>
-                                </ul>
+                              <div style="margin-bottom:-20px;" v-on:click="searchTranslatedWord(word.latin)"><h3 class="inlined">{{word.latin}}</h3> <a class="inlined">&emsp;more info</a></div>
+                              <h4>Parts of Speech:</h4>
+                              <span v-for="(partOfSpeech, i) in word.partsOfSpeech">
+                                <span style="color:#0c82df">{{partOfSpeech}}</span>
+                                <span v-if="i != word.partsOfSpeech.length -1">| </span>
+                              </span>
+                              <h4>Definitions:</h4>
+                              <ul>
+                                <li v-for="(definition, index) in word.definitions" >
+                                  <span><b>{{index + 1}}. </b> </span><span style="text-decoration: underline #0c82df; justify-content:center">{{definition}}</span>
+                                </li>
+                              </ul>
                             </div>
                           </div>
                         </transition>
+
+
                         <transition name="fadeSlow">
                           <div class="block" id="translationBlock" v-if="!loading && translation.length > 0">
                             <span style="position:relative;left:35%;top:45px;"><i class="icon material-icons stacked"  v-on:click="addToSaved"
@@ -216,7 +239,6 @@
                 </transition>
               </span>
             </div>
-
           </div>
 
           <!-- About Page -->
@@ -228,32 +250,37 @@
                 LatinWiki seeks to help you define your and obtain relevant information important to your understanding of the word at the same time.
               </p>
             </div>
-            <div class="block-title">How to Use</div>
+            <div class="block-title">Contact Me</div>
+            <div class="block block-strong">
+              <span>
+                <p>Email: halihuang22@gmail.com</p>
+              </span>
+            </div>
+          </div>
+
+          <div id="pageHelp" class="main-pgview">
+            <div class="block-title">Help</div>
             <div class="block block-strong">
               <ul>
                 <li>
                   Press the arrow at the top where it says "English => Latin" or "Latin => English" to change which language you are translating from.
                 </li>
-                Type in your word or phrase where it says your word and press the search button or hit enter to begin your search.
                 <li>
-                  If you are translating from english to Latin, you will see a page displaying matches. Click on a result to get more information about it.
+                Type in your word or phrase where it says your word and press the search button or hit enter to begin your search.
                 </li>
-                On the resulting page, you can click on any words highlighted blue to quickly search them.
+                <li>
+                  Translating from English to Latin will give you a page of results. Click on a result to get more information about it.
+                </li>
+                <li>
+                On word pages, you can click on any words highlighted blue to quickly search them.
+                </li>
                 <li>
                   You can also save and unsave a searched word by clicking on the bookmark below the search bar. View your saved result in the saved tab.
                 </li>
                 <li>
                   Your history of searched words can also be viewed in the History tab.
                 </li>
-
-
               </ul>
-            </div>
-            <div class="block-title">Contact Me</div>
-            <div class="block block-strong">
-              <span>
-                <p>Email: halihuang22@gmail.com</p>
-              </span>
             </div>
           </div>
 
@@ -265,30 +292,21 @@
 </div>
 
 
-
-  <!-- Cordova -->
-  <!--
-  <script src="cordova.js"></script>
-  -->
-
-  <!-- Framework7 library -->
+  <!-- Framework library -->
   <script src="autoComplete/autocomplete.min.js"></script>
   <script src="framework7/js/framework7.bundle.min.js"></script>
   <script src="js/jquery-3.4.1.min.js"></script>
-
-  <!-- Your custom app scripts -->
   <script src="js/app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="js/vue.min.js"></script>
+  <script src="axios/axios.min.js"></script>
 
 
   <!-- Javascript Files -->
   <script type="text/javascript" src="js/searchLink.js"></script>
-  <script type="text/javascript" src="js/navigation.js"></script>
   <script type="text/javascript" src="js/sidebar.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
   <script type="text/javascript" src="js/autocomplete.js"></script>
-  <!-- <script type="text/javascript" src="js/wordList.js"></script> -->
 
 
 </body>
