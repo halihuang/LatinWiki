@@ -1,9 +1,10 @@
 # Latin Wiki
 
-Latin Wiki is a Cordova web app built with Framework7 and Vue.js that translates Latin to English and English to Latin.
+Latin Wiki is a website built with Framework7 and Vue.js that translates Latin to English and back.
 It translates words by using the MediaWiki API to obtain information from Wikitionary, an online multi-lingual dictionary.
 Searches will also provide you with more detailed information about your word's latin form such as its declension, conjugation, and synonyms.
 
+LatinWiki was also originally a Cordova web app and can still be built and installed as a mobile application on your phone.
 
 ## Local Usage
 
